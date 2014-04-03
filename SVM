@@ -10,7 +10,8 @@ for (i in nindex){
 }
 rm(i,nindex,std)
 t1count <- vector()
-t2count <- vector()
+t2count <- vector
+## loop 300 times
 for (i in 1:300) {
   ## split training and target sets
   target1 <- subset(zomb.data, zombie == 1)
