@@ -1,0 +1,37 @@
+library(e1071)
+zomb.data <- read.csv("~Data/TX_0216.csv")
+## normalize numerical variables
+std = function(list){
+  l = (list-mean(list))/sd(list)
+}
+nindex = c(2,3,4,9:17)
+for (i in nindex){
+  zomb.data[,i] <- std(zomb.data[,i])
+}
+rm(i,nindex,std)
+t1count <- vector()
+t2count <- vector()
+for (i in 1:300) {
+  ## split training and target sets
+  target1 <- subset(zomb.data, zombie == 1)
+  target11 <- target1[sample(nrow(target1),30),]
+  target2 <- subset(zomb.data, zombie == 0)
+  target22 <- target2[sample(nrow(target2),30),]
+  target <- rbind(target11, target22)
+  rm(target1, target2, target11, target22)
+  training <- zomb.data[! zomb.data$uid %in% target$uid, ]
+  ## apply SVM model to training set
+  model.svm <- svm(zombie ~., training)
+  pre <- predict(model.svm, target, type = "class")
+  pre[pre < 0.2] <- 0
+  pre[pre > 0.2] <- 1
+  comp <- data.frame(indicator = target[, "zombie"], yhat = pre)
+  rm(pre)
+  typeI <- subset(comp, indicator == 1 & yhat == 0)
+  typeII <- subset(comp, indicator == 0 & yhat == 1)
+  t1count[i] <- nrow(typeI)/30
+  t2count[i] <- nrow(typeII)/30
+}
+rm(i, typeI, typeII, comp)
+mean(t1count)
+mean(t2count)
