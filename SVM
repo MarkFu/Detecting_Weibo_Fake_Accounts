@@ -10,29 +10,32 @@ for (i in nindex){
 }
 rm(i,nindex,std)
 t1count <- vector()
-t2count <- vector
-## loop 300 times
-for (i in 1:300) {
+t2count <- vector()
+## loop 500 times
+for (i in 1:500) {
   ## split training and target sets
   target1 <- subset(zomb.data, zombie == 1)
-  target11 <- target1[sample(nrow(target1),30),]
+  target11 <- target1[sample(nrow(target1),48),]
   target2 <- subset(zomb.data, zombie == 0)
-  target22 <- target2[sample(nrow(target2),30),]
+  target22 <- target2[sample(nrow(target2),48),]
   target <- rbind(target11, target22)
   rm(target1, target2, target11, target22)
   training <- zomb.data[! zomb.data$uid %in% target$uid, ]
   ## apply SVM model to training set
   model.svm <- svm(zombie ~., training)
   pre <- predict(model.svm, target, type = "class")
-  pre[pre < 0.2] <- 0
-  pre[pre > 0.2] <- 1
+  pre[pre < 0.3] <- 0
+  pre[pre > 0.3] <- 1
   comp <- data.frame(indicator = target[, "zombie"], yhat = pre)
   rm(pre)
-  typeI <- subset(comp, indicator == 1 & yhat == 0)
-  typeII <- subset(comp, indicator == 0 & yhat == 1)
-  t1count[i] <- nrow(typeI)/30
-  t2count[i] <- nrow(typeII)/30
+  type1 <- subset(comp, indicator == 1 & yhat == 0)
+  type2 <- subset(comp, indicator == 0 & yhat == 1)
+  type3 <- subset(comp, indicator == 1 & yhat == 1)
+  type4 <- subset(comp, indicator == 0 & yhat == 0)
+  ## calculate precision and true positive rate
+  t1count[i] <- nrow(rbind(type3, type4))/96
+  t2count[i] <- nrow(type3)/nrow(rbind(type3, type2))
 }
-rm(i, typeI, typeII, comp)
+rm(i, type1, type2, type3, type4, comp)
 mean(t1count)
 mean(t2count)
