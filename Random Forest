@@ -1,0 +1,27 @@
+library("randomForest")
+zomb.data <- read.csv("~data.csv")
+target1 <- subset(zomb.data, zombie == 1)
+target11 <- target1[sample(nrow(target1),48),]
+target2 <- subset(zomb.data, zombie == 0)
+target22 <- target2[sample(nrow(target2),48),]
+target <- rbind(target11, target22)
+rm(target1, target2, target11, target22)
+training <- zomb.data[! zomb.data$uid %in% target$uid, ]
+
+## apply random forest model
+t1count <- vector()
+t2count <- vector()
+for (i in 1:500) {
+  model.rf <- randomForest(as.factor(training[,"zombie"]) ~ ., data = training.rf, ntree= 50, proximity=TRUE)
+  pre.forest = predict(model.rf, target.rf)
+  comp <- data.frame(indicator = target.rf[,"zombie"], yhat = pre.forest)
+  type1 <- subset(comp, indicator == 1 & yhat == 0)
+  type2 <- subset(comp, indicator == 0 & yhat == 1)
+  type3 <- subset(comp, indicator == 1 & yhat == 1)
+  type4 <- subset(comp, indicator == 0 & yhat == 0)
+  t1count[i] <- nrow(rbind(type3, type4))/96
+  t2count[i] <- nrow(type3)/nrow(rbind(type3, type2))
+}
+rm(i, type1, type2, type3, type4, comp)
+mean(t1count)
+mean(t2count)
