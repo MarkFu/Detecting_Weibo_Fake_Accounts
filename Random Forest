@@ -15,7 +15,7 @@ target.rf <- target[,-5:-8]
 t1count <- vector()
 t2count <- vector()
 for (i in 1:500) {
-  model.rf <- randomForest(as.factor(training[,"zombie"]) ~ ., data = training.rf, ntree= 50, proximity=TRUE)
+  model.rf <- randomForest(as.factor(training.rf[,"zombie"]) ~ ., data = training.rf, ntree= 50, proximity=TRUE)
   pre.forest = predict(model.rf, target.rf)
   comp <- data.frame(indicator = target.rf[,"zombie"], yhat = pre.forest)
   type1 <- subset(comp, indicator == 1 & yhat == 0)
