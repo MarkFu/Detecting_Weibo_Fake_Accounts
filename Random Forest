@@ -7,6 +7,9 @@ target22 <- target2[sample(nrow(target2),48),]
 target <- rbind(target11, target22)
 rm(target1, target2, target11, target22)
 training <- zomb.data[! zomb.data$uid %in% target$uid, ]
+## remove variables that contain charactors
+training.rf <- training[,-5:-8]
+target.rf <- target[,-5:-8]
 
 ## apply random forest model
 t1count <- vector()
