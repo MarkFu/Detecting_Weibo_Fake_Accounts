@@ -1,5 +1,6 @@
 library(e1071)
 zomb.data <- read.csv("~/Data.csv")
+
 ## normalize numerical variables
 std = function(list){
   l = (list-mean(list))/sd(list)
