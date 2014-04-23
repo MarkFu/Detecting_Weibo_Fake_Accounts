@@ -15,8 +15,8 @@ target.rf <- target[,-5:-8]
 t1count <- vector()
 t2count <- vector()
 for (i in 1:500) {
-  model.rf <- randomForest(as.factor(training.rf[,"zombie"]) ~ ., data = training.rf, ntree= 50, proximity=TRUE)
-  pre.forest = predict(model.rf, target.rf)
+  model.rf <- randomForest(as.factor(training.rf[,"zombie"]) ~ ., data = training.rf[,-14], ntree= 50, proximity=TRUE)
+  pre.forest = predict(model.rf, target.rf[,-14])
   comp <- data.frame(indicator = target.rf[,"zombie"], yhat = pre.forest)
   type1 <- subset(comp, indicator == 1 & yhat == 0)
   type2 <- subset(comp, indicator == 0 & yhat == 1)
@@ -25,6 +25,6 @@ for (i in 1:500) {
   t1count[i] <- nrow(rbind(type3, type4))/96
   t2count[i] <- nrow(type3)/nrow(rbind(type3, type2))
 }
-rm(i, type1, type2, type3, type4, comp)
+rm(i, type1, type2, type3, type4, comp, model.rf, pre.forest)
 mean(t1count)
 mean(t2count)
